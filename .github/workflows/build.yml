@@ -39,7 +39,7 @@ jobs:
         cd imagebuilder
         
         # Daftar paket minimalis (IPv6 & PPPoE dibuang untuk hemat ruang & RAM)
-        PACKAGES="luci luci-theme-bootstrap opennds wpad-basic-mbedtls -ppp -ppp-mod-pppoe -ip6tables -odhcp6c -kmod-ipv6 -kmod-ip6tables -odhcpd-ipv6only"
+        PACKAGES="luci luci-theme-bootstrap opennds wpad-mini -ppp -ppp-mod-pppoe -ip6tables -odhcp6c -kmod-ipv6 -kmod-ip6tables -odhcpd-ipv6only"
         
         # Proses build image
         make image \

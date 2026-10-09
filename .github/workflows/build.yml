@@ -1,0 +1,52 @@
+name: Build OpenWrt 22.03.7 WR841HP v3
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Initialize Environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libncurses5-dev gawk git gettext libssl-dev xsltproc wget unzip python3 zlib1g-dev file
+
+    - name: Download Image Builder
+      run: |
+        VERSION="22.03.7"
+        TARGET="ath79"
+        SUBTARGET="generic"
+        
+        FILENAME="openwrt-imagebuilder-${VERSION}-${TARGET}-${SUBTARGET}.Linux-x86_64.tar.xz"
+        URL="https://downloads.openwrt.org/releases/${VERSION}/targets/${TARGET}/${SUBTARGET}/${FILENAME}"
+        
+        wget "$URL"
+        tar -xf "$FILENAME"
+        mv openwrt-imagebuilder-* imagebuilder
+
+    - name: Build Firmware
+      run: |
+        # Pastikan skrip uci-defaults memiliki izin eksekusi
+        chmod +x files/etc/uci-defaults/99-custom-config.sh || true
+        
+        cd imagebuilder
+        
+        # Paket minimalis: LuCI standar, tema ringan, dan opennds
+        PACKAGES="luci luci-theme-bootstrap opennds"
+        
+        # Proses build image untuk TP-Link TL-WR841HP v3
+        make image \
+          PROFILE="tplink_tl-wr841hp-v3" \
+          PACKAGES="$PACKAGES" \
+          FILES="../files"
+          
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: openwrt-22.03.7-wr841hp-v3-minimal
+        path: imagebuilder/bin/targets/ath79/generic/*.bin

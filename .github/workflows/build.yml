@@ -39,8 +39,7 @@ jobs:
         cd imagebuilder
         
         # Daftar paket minimalis (IPv6 & PPPoE dibuang untuk hemat ruang & RAM)
-        # Tambahkan -wpad-basic-wolfssl untuk menghindari konflik file hostapd dengan wpad-mini
-        PACKAGES="luci luci-theme-bootstrap opennds wpad-mini -wpad-basic-wolfssl -ppp -ppp-mod-pppoe -ip6tables -odhcp6c -kmod-ipv6 -kmod-ip6tables -odhcpd-ipv6only"
+        PACKAGES="luci luci-theme-bootstrap opennds -ppp -ppp-mod-pppoe -ip6tables -odhcp6c -kmod-ipv6 -kmod-ip6tables -odhcpd-ipv6only"
         
         # Proses build image
         make image \

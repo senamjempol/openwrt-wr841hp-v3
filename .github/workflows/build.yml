@@ -16,7 +16,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential libncurses5-dev gawk git gettext libssl-dev xsltproc wget unzip python3 zlib1g-dev file
 
-    - name: Download Image Builder
+    - name: Download & Extract Image Builder
       run: |
         VERSION="22.03.7"
         TARGET="ath79"
@@ -26,8 +26,10 @@ jobs:
         URL="https://downloads.openwrt.org/releases/${VERSION}/targets/${TARGET}/${SUBTARGET}/${FILENAME}"
         
         wget "$URL"
-        tar -xf "$FILENAME"
-        mv openwrt-imagebuilder-* imagebuilder
+        
+        # Buat direktori tujuan dan ekstrak langsung ke dalamnya (tanpa perlu perintah mv)
+        mkdir -p imagebuilder
+        tar -xf "$FILENAME" -C imagebuilder --strip-components=1
 
     - name: Build Firmware
       run: |
@@ -36,10 +38,10 @@ jobs:
         
         cd imagebuilder
         
-        # Daftar paket minimalis dengan membuang IPv6 & PPPoE untuk menghemat ruang & RAM
+        # Daftar paket minimalis (IPv6 & PPPoE dibuang untuk hemat ruang & RAM)
         PACKAGES="luci luci-theme-bootstrap opennds -ppp -ppp-mod-pppoe -ip6tables -odhcp6c -kmod-ipv6 -kmod-ip6tables -odhcpd-ipv6only"
         
-        # Proses build image dengan menonaktifkan kompilasi IPv6 total di tingkat sistem
+        # Proses build image
         make image \
           PROFILE="tplink_tl-wr841hp-v3" \
           PACKAGES="$PACKAGES" \

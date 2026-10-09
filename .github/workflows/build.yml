@@ -1,4 +1,4 @@
-name: Build OpenWrt 22.03.7 WR841HP v3
+name: Build OpenWrt 22.03.7 WR841HP v3 (Optimized)
 
 on:
   workflow_dispatch:
@@ -36,17 +36,18 @@ jobs:
         
         cd imagebuilder
         
-        # Paket minimalis: LuCI standar, tema ringan, dan opennds
-        PACKAGES="luci luci-theme-bootstrap opennds"
+        # Daftar paket minimalis dengan membuang IPv6 & PPPoE untuk menghemat ruang & RAM
+        PACKAGES="luci luci-theme-bootstrap opennds -ppp -ppp-mod-pppoe -ip6tables -odhcp6c -kmod-ipv6 -kmod-ip6tables -odhcpd-ipv6only"
         
-        # Proses build image untuk TP-Link TL-WR841HP v3
+        # Proses build image dengan menonaktifkan kompilasi IPv6 total di tingkat sistem
         make image \
           PROFILE="tplink_tl-wr841hp-v3" \
           PACKAGES="$PACKAGES" \
-          FILES="../files"
+          FILES="../files" \
+          CONFIG_IPV6=n
           
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: openwrt-22.03.7-wr841hp-v3-minimal
+        name: openwrt-22.03.7-wr841hp-v3-optimized
         path: imagebuilder/bin/targets/ath79/generic/*.bin
